@@ -1,0 +1,369 @@
+// General rules
+@use './vars' as *;
+
+// Change color from smartphone to tablet/pc
+:root{
+    --background-color-header:#00a783;
+    --text-header-1: white;
+    --text-header-2: rgb(230, 230, 230);
+    --icon-filter: invert(100);
+    --icon-filter-small: invert(100);
+    --svg-icon:brightness(0) saturate(100%) invert(100);
+}
+
+header, .search-section {
+    background-color: var(--background-color-header);
+    
+    >*{
+        color: var(--text-header-1);
+    }
+
+    .content span{
+        color: var(--text-header-2);
+    }
+
+    .img-icon{
+        filter: var(--icon-filter);
+        &.svg{
+            filter: var(--svg-icon);
+        }
+    }
+    .img-icon-small{
+        filter:  var(--icon-filter-small);
+    }
+}
+
+svg{
+    filter: none;
+}
+
+// Reset
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    @include font(300, 's', $roboto);
+    background-image: linear-gradient(#00a884 130px, #d9dbda 130px);
+    line-height: normal;
+}
+
+h1,h2,h3,h4,h5,h6{
+    padding: 0;
+    margin: 0
+}
+
+img {
+    width: 100%;
+    display: block;
+}
+
+a {
+    display: inline-block;
+    text-decoration: none;
+    color: currentColor;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+mark{
+    padding: 0;
+    background-color: yellow;
+    color: black
+}
+
+// Header
+header,
+.input-message {
+    @include flex($gap: 10px);
+    min-height: 60px;
+    padding: 10px 15px;
+}
+
+// Button
+button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: inherit;
+}
+
+.ba-button{
+    @include font(500, 'xs', $color:white);
+    background-color: $green;
+    padding: 10px 24px;
+    border-radius: 100vw;
+}
+
+.ba-button.light{
+    background-color: white;
+    color: $green;
+    border: 1px solid $grey;
+}
+
+// Input
+input {
+    @include font(400, 'xs');
+    width: 100%;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    background-color: transparent;
+
+    &::placeholder {
+        @include font(400, 'xs', $color: $grey);
+    }
+}
+
+input:focus-visible {
+    border: none;
+    outline: none;
+}
+
+// Modal
+.modal-backdrop.show,
+.modal-backdrop{
+    background-color: transparent;
+}
+
+// Dropdown
+.dropdown-toggle {
+    color: $grey;
+    z-index: 1;
+    padding: 25px 35px 0 0;
+
+    transition: all 0.3s;
+
+    &::after {
+        content: '';
+        display: none;
+    }
+}
+
+.dropdown-menu {
+    border-radius: 3px;
+    box-shadow: 0 2px 5px 0 rgba(rgb(11, 20, 6), .26), 0 2px 10px 0 rgba(rgb(11, 20, 6), .16);
+    border: 0;
+    padding: 9px 0;
+}
+
+.dropdown-item {
+    @include flex(start);
+    @include font(400, 'xs', $color: $dark-grey);
+    height: 40px;
+    padding: 0 58px 0 24px;
+    text-wrap: nowrap;
+
+    &:hover {
+        background-color: $light-grey;
+    }
+}
+
+.dropdown-menu {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.dropdown-menu {
+    animation: scale .15s linear forwards;
+}
+
+@keyframes scale {
+    from {
+        // opacity: 0;
+        // height: 0;
+        // scale: 0.5;
+        opacity: 0;
+    }
+
+    to {
+        // opacity: 1;
+        // height: 98px;
+        // scale: 1;
+        opacity: 1
+    }
+}
+
+
+
+.content {
+    @include flex(space-between, flex-start, column);
+    height: 50px;
+
+    span {
+        @include font($size: 'xs', $color: $grey );
+    }
+
+    .text-searched {
+        @include font(600, 's', $color:#00a884 );
+    }
+}
+
+
+/* Images */
+.img-profile-small {
+    @include circle(40px);
+}
+
+.img-profile-big {
+    @include circle(50px);
+}
+
+.img-icon-small {
+    @include square(20px);
+    filter: invert(59%) sepia(10%) saturate(435%) hue-rotate(160deg) brightness(97%) contrast(89%);
+    margin: 0 8px 0 8px;
+}
+
+.img-icon {
+    @include square(40px);
+    @include flex;
+    filter: invert(38%) sepia(3%) saturate(2452%) hue-rotate(159deg) brightness(93%) contrast(81%);
+    padding: 8px;
+    cursor: pointer;
+
+    position: relative;
+
+    
+    &:focus::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        @include circle(40px);
+        @include flex;
+        filter: brightness(0) saturate(100%);
+        opacity: 0.2;
+        background-color: grey;
+    }
+}
+
+.img-icon.bigger {
+    padding: 4px;
+}
+
+.text-writing {
+    font-weight: 600;
+}
+
+// Scrollbar
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #b5b5b5c2;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+// Principal rules
+#chatList {
+    @include flex(normal, stretch, column);
+    flex-basis: 100%;
+    background-color: white;
+    max-width: 100%;
+}
+
+#openChat {
+    display: none;
+    flex-basis: 100%;
+    flex-direction: column;
+    position: relative;
+}
+
+.ba-container {
+    height: 100vh;
+    max-width: 100%;
+    margin: 0 auto;
+    display: flex;
+}
+
+/************************/
+/***** Media Query ********/
+/************************/
+
+@media screen and (min-width: 750px) {
+    :root{
+        --background-color-header: #f0f2f5;
+        --text-header-1: black;
+        --text-header-2: #667781;
+        --icon-filter: invert(38%) sepia(3%) saturate(2452%) hue-rotate(159deg) brightness(93%) contrast(81%);
+        --icon-filter-small: invert(59%) sepia(10%) saturate(435%) hue-rotate(160deg) brightness(97%) contrast(89%);
+        --svg-icon: none;
+    }
+
+    .text-writing {
+        color: #00a884;
+    }
+
+    .search-section {
+        background-color: white;
+        border-bottom: 1px solid $light-grey;
+        border-left: 1px solid #cccccc;
+    }
+
+    #chatList {
+        flex: 0 0 45%;
+        max-width: 45%;
+        display: flex!important;
+    }
+    
+    #openChat {
+        display: flex!important;
+        flex-grow: 1;
+
+        header{
+            border-left: 1px solid #cccccc;
+        }
+    }
+
+    .arrow-back,
+    #change-section{
+        display: none;
+    }
+
+}
+
+@media screen and (min-width: 900px) {
+    #chatList {
+        flex: 0 0 40%;
+        max-width: 40%;
+    }
+}
+
+@media screen and (min-width: 1200px) {
+    .ba-container {
+        max-width: 100%;
+    }
+}
+
+@media screen and (min-width: 1300px) {
+    #chatList {
+        flex: 0 0 30%;
+        max-width: 30%;
+    }
+}
+
+@media screen and (min-width: 1400px) {
+    .ba-container {
+        max-width: 1320px;
+    }
+}
+
+@media screen and (min-width: 1440px) {
+    .ba-container {
+        max-width: 1640px;
+        height: calc(100vh - 40px);
+        margin: 20px auto;
+        padding: 0 20px;
+    }
+}
