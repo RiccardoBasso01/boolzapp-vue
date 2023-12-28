@@ -3,6 +3,20 @@ import { DateTime } from "luxon";
 
 const contacts = [
     {
+        id: 0,
+        name: 'Chat GPT',
+        avatar: '_0',
+        visible: true,
+        messages: [
+            {
+                id: 1,
+                date: '15:30',
+                message: 'Ciao! Come posso aiutarti?',
+                status: 'received'
+            }
+        ],
+    },
+    {
         id: 1,
         name: 'Michele',
         avatar: '_1',

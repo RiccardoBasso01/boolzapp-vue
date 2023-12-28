@@ -66,8 +66,11 @@ export default {
     <header>
         <button @click="changeSection" class="img-icon-small arrow-back"><img src="src/assets/img/arrow_back_icon.png"
                 alt="arrow-back"></button>
-        <button><img class="img-profile-small" :src="avatarImg(store.currentContact)"
-                :alt="store.currentContact.name"></button>
+        <button>
+            <div class="img-profile-small">
+                <img :src="avatarImg(store.currentContact)" :alt="store.currentContact.name">
+            </div>
+        </button>
         <div class="content">
             <div>{{ store.currentContact.name }}</div>
             <span v-if="store.isWriting" class="text-writing">Sta scrivendo...</span>

@@ -1,4 +1,6 @@
 <script>
+import OpenAI from "openai";
+
 import { v4 as uuidv4 } from 'uuid';
 import { store } from '../../js/store';
 
@@ -50,15 +52,28 @@ export default {
             this.curCon.messages.push(newMess);
         },
 
-        // Function to send the message
-        sendMessage(message) {
-            if (!message) return;
+        // Function to comunicate with ChatGPT
+        openAiMessage(message) {
+            const openai = new OpenAI({ apiKey: import.meta.env.VITE_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
 
-            const newMessage = message.charAt(0).toUpperCase() + message.slice(1);
-            this.createNewMes(newMessage, 'sent');
+            async function main() {
+                const completion = await openai.chat.completions.create({
+                    messages: [{ role: "system", content: message }],
+                    model: "gpt-3.5-turbo",
+                });
 
+                return completion.choices[0].message.content;
+            }
 
-            // Move current contact to the first position of the array contacts
+            main().then((response) => {
+                this.createNewMes(response, 'received');
+                this.store.isWriting = false
+            })
+
+        },
+
+        // Function to move current contact at the top
+        moveCurrentContact() {
             const contacts = this.store.contacts;
             if (contacts[0] !== this.store.currentContact) {
                 let currIndex = null;
@@ -74,8 +89,22 @@ export default {
 
                 contacts[0] = this.store.currentContact;
             }
+        },
+
+        // Function to send the message
+        sendMessage(message) {
+            if (!message) return;
+
+            const newMessage = message.charAt(0).toUpperCase() + message.slice(1);
+            this.createNewMes(newMessage, 'sent');
+
+            // Move current contact to the first position of the array contacts
+            this.moveCurrentContact();
 
             this.store.isWriting = true;
+
+            // Call chat gpt
+            if (this.store.currentContact.id == 0) { this.openAiMessage(newMessage); return };
 
             setTimeout(() => {
                 if (newMessage == 'Ciao') {
@@ -160,7 +189,7 @@ export default {
         <!-- Message section -->
         <main>
             <!-- Chat messages -->
-            <section @scroll="scroll" id="message-pannel" ref="messagePannel" :class="{ 'bo': store.showSearchMessage }">
+            <section @scroll="scroll" id="message-pannel" ref="messagePannel" :class="{ 'p-top': store.showSearchMessage }">
                 <div v-for="message in curCon.messages" :class="message.status" class="message">
                     <span class="triangle-left"></span>
 
@@ -181,6 +210,7 @@ export default {
                                             Elimina
                                         </button>
                                     </li>
+                                    <!-- <li><button class="dropdown-item" id="listen">Ascolta</button></li> -->
                                     <li><a class="dropdown-item disabled" href="#">Rispondi</a></li>
                                 </ul>
                             </div>
@@ -268,7 +298,7 @@ main {
 
     transition: all .15s linear;
 
-    &.bo {
+    &.p-top {
         padding: 60px 0 0 0;
     }
 }

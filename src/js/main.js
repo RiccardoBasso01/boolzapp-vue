@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
 
+import './openai-test.js'
+
 import '../assets/scss/style.scss'
 import App from '../App.vue'
 

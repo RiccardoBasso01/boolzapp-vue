@@ -11,7 +11,7 @@ export default {
 <template>
   <div class="ba-container">
     <!-- Loader -->
-    <AppLoader />
+    <!-- <AppLoader /> -->
 
     <!-- Section chat list -->
     <ChatList />

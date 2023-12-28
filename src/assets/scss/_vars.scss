@@ -58,6 +58,7 @@ $chat-background:#efeae2;
     border-radius: 50%;
     width: $size;
     height: $size;
+    min-width: $size;
 }
 
 @mixin square($size, $radius:0){

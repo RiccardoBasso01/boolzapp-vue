@@ -125,7 +125,9 @@ export default {
                 <li v-for="contact in searchResult " @click="changeChat(contact)" class="chat-plate"
                     :class="{ 'active': store.currentContact === contact }">
                     <span @click="changeSection" id="change-section"></span>
-                    <img class="img-profile-big" :src="avatarImg(contact)" :alt="contact.name">
+                    <div class="img-profile-big">
+                        <img :src="avatarImg(contact)" :alt="contact.name">
+                    </div>
                     <div class="content">
                         <div class="name">
                             <div :class="{ 'contact-name': searchText.length }">
@@ -137,7 +139,7 @@ export default {
                         </div>
                         <span v-if="store.currentContact === contact && store.isWriting" class="text-writing">Sta
                             scrivendo...</span>
-                        <div v-else :class="{ 'sent': lastMessageInfo(contact, 'status') == 'sent' }" class="test">
+                        <div v-else :class="{ 'sent': lastMessageInfo(contact, 'status') == 'sent' }" class="w-100">
                             <span class="last-message">{{ lastMessage(contact) }}</span>
                         </div>
                     </div>
@@ -166,23 +168,19 @@ export default {
     }
 }
 
-.test {
+.w-100 {
     max-width: 100%;
     width: 100%;
+    @include flex(start, $gap: 5px);
 }
 
 .last-message {
     // max-width: 280px;
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 
     max-width: 100%;
-}
-
-.sent {
-    @include flex(start, $gap: 5px);
 }
 
 .sent::before {
