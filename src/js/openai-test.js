@@ -38,3 +38,17 @@
 // }
 
 // listen.addEventListener('click', main)
+
+
+// from openai import OpenAI
+// import OpenAI from "openai";
+
+// client = OpenAI()
+// const openai = new OpenAI({ apiKey: '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', dangerouslyAllowBrowser: true});
+
+
+// audio_file= open("/path/to/file/audio.mp3", "rb")
+// transcript = client.audio.transcriptions.create(
+//   model="whisper-1", 
+//   file=audio_file
+// )

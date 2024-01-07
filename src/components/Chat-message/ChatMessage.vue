@@ -52,8 +52,26 @@ export default {
             this.curCon.messages.push(newMess);
         },
 
+        createNewImg(message, status, url) {
+            const newMess = {
+                id: uuidv4(), // Unique ID
+                date: this.store.dateTime,
+                url,
+                message,
+                status
+            }
+            this.curCon.messages.push(newMess);
+        },
+
+        createImg() {
+            this.createNewImg('Ecco l\'immagine', 'received', 'https://picsum.photos/600');
+            this.store.isWriting = false;
+        },
+
         // Function to comunicate with ChatGPT
         openAiMessage(message) {
+            if (message == 'Immagine') { this.createImg(); return }
+
             const openai = new OpenAI({ apiKey: import.meta.env.VITE_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
 
             async function main() {
@@ -61,15 +79,68 @@ export default {
                     messages: [{ role: "system", content: message }],
                     model: "gpt-3.5-turbo",
                 });
-
-                return completion.choices[0].message.content;
+                const response = completion.choices[0].message.content;
+                if (response.split('')[0] == '1') { return 'json' };
+                return response;
             }
 
             main().then((response) => {
+                if (response == 'json') { this.jsonMode(message); return }
                 this.createNewMes(response, 'received');
                 this.store.isWriting = false
             })
 
+        },
+
+        jsonMode(message) {
+            if (message == 'Immagine') { this.createImg(); return }
+
+            const openai = new OpenAI({ apiKey: import.meta.env.VITE_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
+
+            async function main() {
+                try {
+
+                    const completion = await openai.chat.completions.create({
+                        messages: [
+                            {
+                                role: "system",
+                                content: "You are a helpful assistant designed to output JSON.",
+                            },
+                            { role: "user", content: message },
+                        ],
+                        model: "gpt-3.5-turbo-1106",
+                        response_format: { type: "json_object" },
+                    });
+                    console.log(JSON.parse(completion.choices[0].message.content));
+                    return (JSON.parse(completion.choices[0].message.content));
+                }
+                catch (err) {
+                    console.log('errore')
+                    return err;
+                }
+            }
+
+            main().then((response) => {
+                this.createJson(response.products, response.brand);
+                this.store.isWriting = false
+            }).catch((err) => {
+                this.createNewMes(err, 'received');
+                this.store.isWriting = false
+            })
+
+        },
+
+        createJson(products, brand) {
+            const newMess = {
+                id: uuidv4(), // Unique ID
+                date: this.store.dateTime,
+                products,
+                brand,
+                status: 'received',
+                type: 'list',
+            }
+            console.log(newMess.products)
+            this.curCon.messages.push(newMess);
         },
 
         // Function to move current contact at the top
@@ -194,7 +265,7 @@ export default {
                     <span class="triangle-left"></span>
 
                     <!-- Content of the message -->
-                    <div class="message-content">
+                    <div v-if="message.type == 'list'" class="message-content">
                         <!-- Message dropdown -->
                         <div class="dropdown">
                             <button type="button" class="dropdown-toggle" data-bs-toggle="dropdown">
@@ -215,6 +286,58 @@ export default {
                                 </ul>
                             </div>
 
+                        </div>
+
+                        <span class="message-text">
+                            <div class="row">
+                                <div v-for="product in message.products" class="product col">
+                                    <div class="product-img">
+                                        <img src="src\assets\svg\placeholder.svg" alt="placeholder">
+                                    </div>
+                                    <div class="name">
+                                        {{ product.name }}
+                                    </div>
+
+                                    <div class="price">
+                                        {{ product.price }}€
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <ul>
+                                <li v-for="product in message.products">
+                                    {{ product.name }}
+                                </li>
+                            </ul> -->
+                        </span>
+
+                        <div class="date">{{ message.date }}</div>
+                    </div>
+
+                    <div v-else class="message-content" :class="{ 'image': message.url }">
+                        <!-- Message dropdown -->
+                        <div class="dropdown">
+                            <button type="button" class="dropdown-toggle" data-bs-toggle="dropdown">
+                                <span><font-awesome-icon icon="angle-down" /></span>
+                            </button>
+
+                            <div class="dropdown-menu">
+                                <ul>
+                                    <li>
+                                        <!-- Button delete modal -->
+                                        <button type="button" class="dropdown-item" data-bs-toggle="modal"
+                                            data-bs-target="#delete-message" @click="currentMessage = message.id">
+                                            Elimina
+                                        </button>
+                                    </li>
+                                    <!-- <li><button class="dropdown-item" id="listen">Ascolta</button></li> -->
+                                    <li><a class="dropdown-item disabled" href="#">Rispondi</a></li>
+                                </ul>
+                            </div>
+
+                        </div>
+                        <!-- Image -->
+                        <div v-if="message.url" class="message-text img">
+                            <img class="img-test" :src="message.url" :alt="message.url">
                         </div>
 
                         <span class="message-text">{{ message.message }}</span>
@@ -309,6 +432,12 @@ main {
     margin-bottom: 10px;
 }
 
+.message-text.img {
+    margin-bottom: 7px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
 .message.sent {
     justify-content: flex-end;
 }
@@ -326,6 +455,10 @@ main {
     max-width: 80%;
     overflow-wrap: break-word;
     white-space: pre-wrap;
+
+    &.image {
+        max-width: 50%;
+    }
 }
 
 .message.sent .message-content {
@@ -337,6 +470,24 @@ main {
     background-color: #fff;
     border-radius: 0 10px 10px 10px;
 }
+
+.product {
+    .name {
+        margin-top: 10px;
+        @include font();
+    }
+
+    .price {
+        @include font(400, 'xs', );
+    }
+}
+
+.product-img {
+    @include square(100px);
+    border: 5px solid $light-green;
+    border-radius: 10px;
+}
+
 
 // Message triangles
 .message.sent .triangle-right {
